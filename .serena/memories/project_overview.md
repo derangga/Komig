@@ -1,28 +1,29 @@
 # KomigSample - Project Overview
 
-## Purpose
-KomigSample is a **Kotlin Multiplatform (KMP)** sample project targeting **Android** and **iOS**.
-It demonstrates the use of Compose Multiplatform for shared UI across platforms.
+**KomigSample** is a Kotlin Multiplatform (KMP) project that serves as both a library and a sample application for image compression.
 
 ## Modules
-- **composeApp** — The main application module with shared Compose UI code and platform-specific entry points.
-  - Package: `com.komig.sample`
-  - Android namespace: `com.komig.sample`
-- **komig** — A KMP library module (produces an Android library + iOS XCFramework named `komigKit`).
-  - Package: `com.komig`
-  - Android namespace: `com.komig`
+
+1. **`komig`** — A Kotlin Multiplatform library for image compression. Provides a DSL-based API (`Komig.compress`) supporting JPEG, PNG, and WEBP formats with configurable quality, resizing (FitInside, ExactResize, Percentage), and auto-format detection from magic bytes. Uses `expect/actual` for platform-specific `ImageCompressor` implementations (Android uses Android bitmap APIs, iOS uses native APIs).
+
+2. **`composeApp`** — A Compose Multiplatform sample app demonstrating the `komig` library. Targets Android and iOS (iosArm64, iosSimulatorArm64). Uses Material3, Compose resources, ViewModel + StateFlow for state management, and a custom image picker (expect/actual).
 
 ## Tech Stack
-- **Kotlin**: 2.3.0
-- **Compose Multiplatform**: 1.10.0
-- **Android Gradle Plugin (AGP)**: 8.11.2
-- **Gradle**: with Kotlin DSL (`build.gradle.kts`), version catalog (`gradle/libs.versions.toml`)
-- **Android**: compileSdk 36, minSdk 26, targetSdk 36, Java 11 compatibility
-- **iOS targets**: iosArm64, iosSimulatorArm64 (composeApp), + iosX64 (komig)
-- **Jetpack Compose** (Material3), AndroidX Activity, AndroidX Lifecycle (ViewModel + Runtime)
+- **Language**: Kotlin 2.3.0
+- **Build system**: Gradle with Kotlin DSL, version catalogs (`libs.versions.toml`)
+- **UI**: Compose Multiplatform 1.10.0 with Material3
+- **Architecture**: MVVM (ViewModel + StateFlow)
+- **Concurrency**: Kotlin Coroutines 1.10.1
+- **Platforms**: Android (minSdk 26, compileSdk/targetSdk 36), iOS (arm64, simulatorArm64; iosX64 for library only)
+- **AGP**: 8.11.2
+- **JVM Target**: 11
 
-## Key Configuration
-- `kotlin.code.style=official`
-- Gradle configuration cache and build cache enabled
-- `TYPESAFE_PROJECT_ACCESSORS` feature preview enabled
-- Non-transitive R classes (`android.nonTransitiveRClass=true`)
+## Key API
+```kotlin
+val result = Komig.compress(imageBytes) {
+    quality(80)
+    format(OutputFormat.WEBP)
+    maxResolution(1920, 1080)
+}
+```
+Returns `CompressionResult` with compressed bytes, dimensions, format, and size info.

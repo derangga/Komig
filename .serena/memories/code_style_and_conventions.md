@@ -1,27 +1,18 @@
 # Code Style and Conventions
 
-## General
-- **Kotlin code style**: `official` (as declared in `gradle.properties`)
-- **Language**: Kotlin (no Java source files in the project)
-- **Build scripts**: Kotlin DSL (`.gradle.kts`)
-
-## Naming Conventions
-- Packages: lowercase dot-separated (`com.komig.sample`, `com.komig`)
-- Classes: PascalCase (`Greeting`, `MainActivity`)
-- Functions: camelCase (`greet()`, `getPlatform()`)
-- Composable functions: PascalCase (`App()`, `AppAndroidPreview()`)
-- Platform-specific files: `<Name>.<platform>.kt` (e.g., `Platform.android.kt`, `Platform.ios.kt`)
-
-## Architecture Patterns
-- **expect/actual** pattern for platform-specific implementations (see `Platform.kt` / `Platform.android.kt` / `Platform.ios.kt`)
-- Compose Multiplatform shared UI in `commonMain`, platform entry points in `androidMain` / `iosMain`
-- Single-Activity architecture on Android (`MainActivity` using `setContent`)
-
-## Compose Conventions
-- `@Composable` and `@Preview` annotations used together for preview-able composables
-- Material3 theming via `MaterialTheme {}`
-- Modifier chaining with trailing lambda style
-
-## Dependencies
-- Managed via Gradle Version Catalog (`gradle/libs.versions.toml`)
-- Referenced as `libs.plugins.*` and `libs.*` in build scripts
+- **Kotlin code style**: Official (`kotlin.code.style=official` in gradle.properties)
+- **Trailing commas**: Used consistently in function parameters, constructor parameters, and DSL blocks
+- **KDoc**: Used on public API classes and functions in the `komig` library; sample app uses less documentation
+- **Package structure**: `com.komig` for the library, `com.komig.sample` for the sample app
+- **Expect/actual pattern**: Used for platform-specific implementations (`ImageCompressor`, `ImagePicker`, `ByteArrayImage`, `Platform`)
+- **Sealed classes**: Used for type-safe hierarchies (`KomigException`, `ResizeMode`)
+- **Enums**: Used for fixed sets (`OutputFormat`)
+- **Data classes**: Used for value types (`CompressionResult`, `CompressUiState`)
+- **Object**: Used for singleton entry points (`Komig`)
+- **Builder DSL**: Configuration via builder pattern with DSL lambda (`CompressionConfig.Builder`)
+- **Coroutines**: Suspend functions for async operations, `Dispatchers.Default` for CPU-bound work
+- **State management**: `MutableStateFlow` / `StateFlow` with `.update {}` for atomic state changes
+- **ViewModel**: Jetpack/KMP ViewModel with `viewModelScope`
+- **Compose**: Material3 theming, `@Composable` functions in separate files per screen
+- **Indentation**: 4 spaces
+- **Internal visibility**: Used for implementation details (`internal expect class ImageCompressor`)

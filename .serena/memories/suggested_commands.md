@@ -1,30 +1,38 @@
 # Suggested Commands
 
 ## Build
-- **Build Android debug APK**: `./gradlew :composeApp:assembleDebug`
-- **Build Android release APK**: `./gradlew :composeApp:assembleRelease`
-- **Build komig library**: `./gradlew :komig:build`
-- **Build all**: `./gradlew build`
+```bash
+./gradlew build                        # Build all modules
+./gradlew :komig:build                 # Build the komig library only
+./gradlew :composeApp:build            # Build the sample app only
+./gradlew :composeApp:assembleDebug    # Build Android debug APK
+```
 
 ## Test
-- **Run common tests (composeApp)**: `./gradlew :composeApp:allTests`
-- **Run common tests (komig)**: `./gradlew :komig:allTests`
-- **Run komig Android host tests**: `./gradlew :komig:testDebugUnitTest`
-- **Run komig Android device tests**: `./gradlew :komig:connectedAndroidTest`
+```bash
+./gradlew test                                    # Run all tests
+./gradlew :komig:testDebugUnitTest                # Run komig Android unit tests
+./gradlew :composeApp:testDebugUnitTest           # Run sample app unit tests
+```
+
+## Run (Android)
+```bash
+./gradlew :composeApp:installDebug     # Install debug APK on connected device/emulator
+```
 
 ## Clean
-- **Clean build**: `./gradlew clean`
+```bash
+./gradlew clean                        # Clean all build outputs
+```
 
 ## Gradle
-- **List dependencies**: `./gradlew :composeApp:dependencies`
-- **Refresh dependencies**: `./gradlew --refresh-dependencies`
+```bash
+./gradlew dependencies                 # Show dependency tree
+./gradlew :komig:dependencies          # Show komig dependency tree
+```
 
-## iOS
-- Open `iosApp/` directory in Xcode to build and run the iOS app.
-
-## System Utilities (macOS / Darwin)
-- `git` — version control
-- `ls` — list directory contents
-- `find` — search for files
-- `grep` — search file contents
-- `open` — open files/directories in default app (e.g. `open iosApp/` for Xcode)
+## System Utilities (macOS/Darwin)
+```bash
+git status                             # Check git state
+git log --oneline -10                  # Recent commits
+```
