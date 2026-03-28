@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidKotlinMultiplatformLibrary)
     alias(libs.plugins.androidLint)
+    alias(libs.plugins.mavenPublish)
 }
 
 kotlin {
@@ -102,4 +103,40 @@ kotlin {
         }
     }
 
+}
+
+mavenPublishing {
+    publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+
+    if (project.findProperty("signing.keyId") != null) {
+        signAllPublications()
+    }
+
+    pom {
+        name.set("Komig")
+        description.set("Kotlin Multiplatform image compression library for Android and iOS")
+        url.set("https://github.com/derangga/Komig")
+        inceptionYear.set("2026")
+
+        licenses {
+            license {
+                name.set("Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
+            }
+        }
+        developers {
+            developer {
+                id.set("derangga")
+                name.set("Dimas Rangga")
+                email.set("aldebaransdev@gmail.com")
+                url.set("https://github.com/derangga")
+            }
+        }
+        scm {
+            url.set("https://github.com/derangga/Komig")
+            connection.set("scm:git:git://github.com/derangga/Komig.git")
+            developerConnection.set("scm:git:ssh://git@github.com/derangga/Komig.git")
+        }
+    }
 }

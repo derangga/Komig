@@ -15,6 +15,7 @@ kotlin = "2.3.0"
 kotlinx-coroutines = "1.10.1"
 material3 = "1.10.0-alpha05"
 kotlinStdlib = "2.3.0"
+mavenPublish = "0.30.0"
 runner = "1.5.2"
 core = "1.5.0"
 
@@ -50,3 +51,4 @@ composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "k
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 androidLint = { id = "com.android.lint", version.ref = "agp" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
