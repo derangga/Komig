@@ -2,6 +2,7 @@ package com.komig
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.core.graphics.scale
 import java.io.ByteArrayOutputStream
 
 internal actual class ImageCompressor actual constructor() {
@@ -30,29 +31,25 @@ internal actual class ImageCompressor actual constructor() {
         val decoded = decodeBitmap(input, sampleSize)
             ?: throw KomigException.DecodingException("BitmapFactory returned null")
 
-        try {
+        return decoded.useAndRecycle { source ->
             // 4. Resize if needed
-            val resized = applyResize(decoded, originalWidth, originalHeight, config.resizeMode)
-            val needsRecycleResized = resized !== decoded
+            val resized = applyResize(source, originalWidth, originalHeight, config.resizeMode)
+            val shouldRecycleResized = resized !== source
 
-            try {
+            resized.useAndRecycle(recycle = shouldRecycleResized) { bitmap ->
                 // 5. Encode
                 val compressFormat = mapFormat(config.format)
-                val outputBytes = encode(resized, compressFormat, config.quality)
+                val outputBytes = encode(bitmap, compressFormat, config.quality)
 
-                return CompressionResult(
+                CompressionResult(
                     bytes = outputBytes,
-                    width = resized.width,
-                    height = resized.height,
+                    width = bitmap.width,
+                    height = bitmap.height,
                     format = config.format,
                     inputSizeBytes = inputSize,
                     outputSizeBytes = outputBytes.size.toLong(),
                 )
-            } finally {
-                if (needsRecycleResized) resized.recycle()
             }
-        } finally {
-            decoded.recycle()
         }
     }
 
@@ -101,18 +98,18 @@ internal actual class ImageCompressor actual constructor() {
             if (targetW == bitmap.width && targetH == bitmap.height) {
                 bitmap
             } else {
-                Bitmap.createScaledBitmap(bitmap, targetW, targetH, true)
+                bitmap.scale(targetW, targetH)
             }
         }
 
         is ResizeMode.ExactResize -> {
-            Bitmap.createScaledBitmap(bitmap, resizeMode.width, resizeMode.height, true)
+            bitmap.scale(resizeMode.width, resizeMode.height)
         }
 
         is ResizeMode.Percentage -> {
             val targetW = (originalWidth * resizeMode.factor).toInt().coerceAtLeast(1)
             val targetH = (originalHeight * resizeMode.factor).toInt().coerceAtLeast(1)
-            Bitmap.createScaledBitmap(bitmap, targetW, targetH, true)
+            bitmap.scale(targetW, targetH)
         }
 
         null -> bitmap
@@ -157,3 +154,10 @@ internal actual class ImageCompressor actual constructor() {
         return stream.toByteArray()
     }
 }
+
+private inline fun <R> Bitmap.useAndRecycle(recycle: Boolean = true, block: (Bitmap) -> R): R =
+    try {
+        block(this)
+    } finally {
+        if (recycle) recycle()
+    }
