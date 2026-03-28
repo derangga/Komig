@@ -19,7 +19,39 @@ Komig provides a simple, idiomatic Kotlin API for compressing images with contro
 
 JPEG, PNG, WebP
 
-### Usage
+## Installation
+
+Add the dependency to your `build.gradle.kts`:
+
+**Kotlin Multiplatform (commonMain)**
+
+```kotlin
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.derangga:komig:0.1.0")
+        }
+    }
+}
+```
+
+**Android only**
+
+```kotlin
+dependencies {
+    implementation("io.github.derangga:komig:0.1.0")
+}
+```
+
+Make sure you have Maven Central in your repositories:
+
+```kotlin
+repositories {
+    mavenCentral()
+}
+```
+
+## Usage
 
 ```kotlin
 // Minimal — sensible defaults (quality 80, preserve input format)
@@ -108,4 +140,4 @@ komig/src/
 
 ## License
 
-TBD
+[MIT License](LICENSE)
