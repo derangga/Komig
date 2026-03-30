@@ -19,4 +19,8 @@ sealed class KomigException(message: String, cause: Throwable? = null) :
     /** The compression configuration is invalid. */
     class InvalidConfigException(message: String, cause: Throwable? = null) :
         KomigException(message, cause)
+
+    /** The file at the given path could not be read. */
+    class FileIOException(message: String, cause: Throwable? = null) :
+        KomigException(message, cause)
 }
