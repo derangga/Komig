@@ -15,19 +15,24 @@ Key entry point: `Komig.compress(input) { quality(80); format(OutputFormat.WEBP)
 
 ## How
 
+### Tooling Rules
+
+- **All shell commands** must be prefixed with `rtk` (e.g. `rtk ./gradlew :komig:build`) to save tokens via the RTK proxy.
+- **All file search, symbol lookup, and code navigation** must use Serena tools (`find_symbol`, `get_symbols_overview`, `find_file`, `search_for_pattern`, `list_dir`, etc.) — never use `grep`, `find`, or `cat` via Bash for these purposes.
+
 ### Build & Verify
 
 ```bash
-./gradlew :komig:build                           # Build library
-./gradlew :composeApp:assembleDebug              # Build sample app
+rtk ./gradlew :komig:build                           # Build library
+rtk ./gradlew :composeApp:assembleDebug              # Build sample app
 ```
 
 ### Tests
 
 ```bash
-./gradlew :komig:testDebugUnitTest               # commonTest + androidHostTest (JVM)
-./gradlew :komig:connectedDebugAndroidTest       # androidDeviceTest (requires emulator/device)
-./gradlew :komig:iosSimulatorArm64Test           # iosTest (requires Xcode + simulator)
+rtk ./gradlew :komig:testDebugUnitTest               # commonTest + androidHostTest (JVM)
+rtk ./gradlew :komig:connectedDebugAndroidTest       # androidDeviceTest (requires emulator/device)
+rtk ./gradlew :komig:iosSimulatorArm64Test           # iosTest (requires Xcode + simulator)
 ```
 
 **Important**: `androidHostTest` cannot test real compression — `BitmapFactory` returns null on host JVM. Pure logic tests belong in `commonTest`, platform compression tests in `androidDeviceTest` or `iosTest`.
@@ -35,7 +40,7 @@ Key entry point: `Komig.compress(input) { quality(80); format(OutputFormat.WEBP)
 ### Lint & Format
 
 ```bash
-./gradlew :komig:lint                            # Android lint
+rtk ./gradlew :komig:lint                            # Android lint
 ```
 
 ## Project Conventions

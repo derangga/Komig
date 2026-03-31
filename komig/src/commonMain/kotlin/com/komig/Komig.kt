@@ -35,6 +35,22 @@ object Komig {
         }
     }
 
+    /**
+     * Compress the image at [filePath] using the configuration built by [block].
+     *
+     * Reads all bytes from the file, then delegates to [compress].
+     *
+     * @throws KomigException.FileIOException if the file cannot be read.
+     * @throws KomigException on invalid config, unsupported format, or codec failure.
+     */
+    suspend fun compress(
+        filePath: String,
+        block: CompressionConfig.Builder.() -> Unit = {},
+    ): CompressionResult {
+        val input = FileHandler.readBytes(filePath)
+        return compress(input, block)
+    }
+
     private fun resolveFormat(
         input: ByteArray,
         config: CompressionConfig,

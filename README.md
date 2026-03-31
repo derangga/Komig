@@ -53,6 +53,8 @@ repositories {
 
 ## Usage
 
+### Compress from ByteArray
+
 ```kotlin
 // Minimal — sensible defaults (quality 80, preserve input format)
 val result = Komig.compress(imageBytes)
@@ -63,14 +65,70 @@ val result = Komig.compress(imageBytes) {
     format(OutputFormat.WEBP)
     maxResolution(1920, 1080)
 }
+```
 
-// Result
-result.bytes          // compressed output as ByteArray
-result.width          // output width
-result.height         // output height
-result.format         // output format
-result.inputSizeBytes // original size
-result.outputSizeBytes // compressed size
+### Compress from file path
+
+Works on both Android and iOS — pass the absolute path to the image file:
+
+```kotlin
+// Minimal
+val result = Komig.compress("/path/to/photo.jpg")
+
+// Full DSL
+val result = Komig.compress("/path/to/photo.jpg") {
+    quality(80)
+    format(OutputFormat.WEBP)
+    maxResolution(1920, 1080)
+}
+```
+
+### Result properties
+
+```kotlin
+result.bytes           // compressed output as ByteArray
+result.width           // output width
+result.height          // output height
+result.format          // output format
+result.inputSizeBytes  // original size in bytes
+result.outputSizeBytes // compressed size in bytes
+result.cachedPath      // file path if cacheResult() was called, null otherwise
+result.isBytesAvailable // false after cacheResult() is called
+```
+
+### Caching the result
+
+By default, the compressed image is kept in memory as `result.bytes`. If you want to persist it to disk and free the memory, call `cacheResult()`:
+
+```kotlin
+val result = Komig.compress("/path/to/photo.jpg") {
+    quality(80)
+    format(OutputFormat.WEBP)
+}
+
+// Write to disk and release bytes from memory
+val cachedPath = result.cacheResult(
+    directory = "/path/to/cache/dir",
+    fileName = "photo_compressed",   // extension is appended automatically, e.g. "photo_compressed.webp"
+)
+
+// Retrieve the cached file path later
+val path = result.cachedPath // "/path/to/cache/dir/photo_compressed.webp"
+```
+
+> [!WARNING]
+> Calling `cacheResult()` **permanently releases** `result.bytes` from memory to reduce heap pressure.
+> Any subsequent access to `result.bytes` after caching will throw an `IllegalStateException`.
+> Use `result.isBytesAvailable` to check whether bytes are still in memory before accessing them.
+
+```kotlin
+val result = Komig.compress(imageBytes)
+
+result.isBytesAvailable   // true
+result.cacheResult("/cache/dir", "output")
+result.isBytesAvailable   // false
+
+result.bytes              // throws IllegalStateException: "Bytes have been released after caching. Use the cached file at: ..."
 ```
 
 ### What to do with the result
@@ -100,21 +158,14 @@ val imageBitmap = Image.makeFromEncoded(result.bytes).toComposeImageBitmap()
 Image(bitmap = imageBitmap, contentDescription = "Compressed image")
 ```
 
-**Save to file (Android)**
+**Save to file (cross-platform)**
 
 ```kotlin
-val file = File(context.cacheDir, "compressed.webp")
-file.writeBytes(result.bytes)
-```
-
-**Save to file (iOS — shared Kotlin code)**
-
-```kotlin
-import platform.Foundation.NSData
-import platform.Foundation.writeToFile
-
-val nsData = result.bytes.toNSData()
-nsData.writeToFile("/path/to/compressed.webp", atomically = true)
+// Works on both Android and iOS
+val path = result.cacheResult(
+    directory = context.cacheDir.absolutePath, // Android example; use NSCachesDirectory path on iOS
+    fileName = "compressed",
+)
 ```
 
 **Upload to a server**
